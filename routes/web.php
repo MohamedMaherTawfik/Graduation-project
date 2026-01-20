@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\admin\AdminController;
 use App\Http\Controllers\web\Auth\AuthController;
 use App\Http\Controllers\web\home\HomeController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -19,3 +20,8 @@ Route::prefix('')->group(function () {
         Route::get('/register', [AuthController::class, 'register'])->name('register');
     });
 });
+
+
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+Route::get('/admin/contacts', [AdminController::class, 'contacts'])->name('admin.contacts');

@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\V1\chat\ChatController;
-use App\Http\Controllers\Api\V1\pdf\PdfController;
+use App\Http\Controllers\Api\V1\admin\AdminController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use App\Http\Middleware\adminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 
@@ -18,4 +17,12 @@ Route::prefix('v1')->group(function () {
         });
     });
 
+});
+
+
+Route::prefix('admin')->middleware(['auth:sanctum', 'throttle:10,1', adminMiddleware::class])->group(function () {
+    Route::prefix('users')->group(function () {
+        Route::get('all', [AdminController::class, 'getAllUsers'])->name('admin.users.all');
+        Route::delete('{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    });
 });

@@ -117,8 +117,13 @@
                     loginMessage.textContent = "تم تسجيل الدخول بنجاح!";
                     loginMessage.classList.add("text-green-500");
                     setTimeout(() => {
-                        window.location.href = "{{ route('home') }}";
+                        if (json.data.user.role === 'admin') {
+                            window.location.href = "{{ route('admin.index') }}";
+                        } else {
+                            window.location.href = "{{ route('home') }}";
+                        }
                     }, 500);
+
                 } else {
                     let errorMessage = "";
                     if (json.errors) {
@@ -138,7 +143,6 @@
                 loginMessage.classList.add("text-red-500");
             }
         });
-        // Toggle password visibility
         const togglePassword = document.getElementById("togglePassword");
         const passwordInput = document.getElementById("password");
 
@@ -146,7 +150,6 @@
             const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
             passwordInput.setAttribute("type", type);
 
-            // تغيير الأيقونة عند التبديل
             togglePassword.innerHTML = type === "password" ?
                 `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
