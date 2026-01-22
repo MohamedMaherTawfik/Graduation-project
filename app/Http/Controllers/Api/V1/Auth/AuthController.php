@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Throwable;
 
 class AuthController extends Controller
@@ -117,5 +118,70 @@ class AuthController extends Controller
             'user' => new UserResource($user)
         ], 'Profile updated successfully.');
     }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'لو الإيميل موجود هيرجعلك لينك'
+            ]);
+        }
+
+        $token = Str::random(64);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now()
+            ]
+        );
+
+        return response()->json([
+            'reset_link' => url('/reset-password') . "?email={$user->email}&token={$token}",
+            'token' => $token,
+        ]);
+    }
+
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$record || !Hash::check($request->token, $record->token)) {
+            return response()->json([
+                'message' => 'Token غير صالح'
+            ], 400);
+        }
+
+        User::where('email', $request->email)->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->delete();
+
+        return response()->json([
+            'message' => 'تم تغيير كلمة المرور بنجاح'
+        ]);
+    }
+
+
+
 
 }

@@ -53,7 +53,7 @@
                             </svg>
                         </span>
                     </div>
-                    <a href="#" class="text-xs text-gray-500 mt-1 block">نسيت كلمة المرور؟</a>
+                    <a href="{{ route('forgot-password') }}" class="text-xs text-gray-500 mt-1 block">نسيت كلمة المرور؟</a>
                 </div>
 
                 <!-- زر تسجيل الدخول -->
